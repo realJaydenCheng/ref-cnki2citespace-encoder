@@ -57,7 +57,8 @@ def tran_ref(ref_tp):
         except :
             continue
         #ref = [default_assignment(ref ,1),default_assignment(ref ,-1),default_assignment(ref ,-2)]
-
+        if '' in ref :
+            continue
         # 滕守尧译,1998,四川人民出版社
         result.append(','.join(ref))
     return result
@@ -79,6 +80,8 @@ def tran_book(book_tp):
             continue
         #book = [default_assignment(book ,2),default_assignment(book ,-1), default_assignment(book ,1)]
         # 汉斯·赛德尔迈尔,2021,译林出版社
+        if '' in book : 
+            continue
         result.append(','.join(book))
     return result
 
