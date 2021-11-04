@@ -1,5 +1,6 @@
+from io import DEFAULT_BUFFER_SIZE
 import re
-
+DEFAULT = ""
 
 def main(file_name):
     es_dict = read_info(file_name)  # 输入文件，解析文件，转换为字典{文章标题：引用文章，引用书籍}
@@ -33,6 +34,13 @@ def clear_info(essay):
     ref.extend(book)
     return ref
 
+'''
+def default_assignment(arr ,index):
+    try :
+        return arr[index]
+    except : 
+        return DEFAULT
+'''
 
 def tran_ref(ref_tp):
     # eg: [2]艺术感觉与美育. 滕守尧译,[美]拉尔夫.史密斯著. 四川人民出版社 . 1998
@@ -44,7 +52,12 @@ def tran_ref(ref_tp):
         ref = re.sub(r"\[\d+?\]", "", ref)
         # 艺术感觉与美育. 滕守尧译.[美]拉尔夫.史密斯著. 四川人民出版社 . 1998
         ref = ref.split('.')
-        ref = [ref[1], ref[-1], ref[-2]]
+        try:
+            ref = [ref[1], ref[-1], ref[-2]]
+        except :
+            continue
+        #ref = [default_assignment(ref ,1),default_assignment(ref ,-1),default_assignment(ref ,-2)]
+
         # 滕守尧译,1998,四川人民出版社
         result.append(','.join(ref))
     return result
@@ -60,7 +73,11 @@ def tran_book(book_tp):
         book = re.sub(r"\[\d+?\]", "", book)
         # 中心的丧失[M]. 译林出版社 . 汉斯·赛德尔迈尔. 2021
         book = book.split('.')
-        book = [book[2], book[-1], book[1]]
+        try :
+            book = [book[2], book[-1], book[1]]
+        except : 
+            continue
+        #book = [default_assignment(book ,2),default_assignment(book ,-1), default_assignment(book ,1)]
         # 汉斯·赛德尔迈尔,2021,译林出版社
         result.append(','.join(book))
     return result
