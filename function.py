@@ -86,25 +86,34 @@ def tran_book(book_tp):
     return result
 
 
-def write_file(target, essays):
-    file = open(target, 'r', encoding="utf-8")
+def write_file(original_file, essays):
+    file = open(original_file, 'r', encoding="utf-8")
     file = file.read()
     file = re.findall(r"PT.*?ER", file, re.S)
     result = ""
     error = set()
-    for essay_in_file in file:
-        title = re.findall(r"TI.*?SO", essay_in_file, re.S)
+    for essay_in_origin in file:
+        title = re.findall(r"TI.*?SO", essay_in_origin, re.S)
         title = title[0].replace("TI", "").replace(
             "SO", "").replace(" ", '').replace("\n", '')
+        author = re.findall(r"AU.*?AF",essay_in_origin,re.S)
+        author = author[0].replace(',','').replace('\n','').replace("AU",'').replace("AF","").strip()
         for t in essays:
             isFound = 0
             if t == title:
-                ref = '\n'.join(essays[t])
+                ref_list = []
+                #ref = '\n'.join(essays[t])
+                for ref in essays[t]: # 比对作者 剔除自引数据
+                    if author in ref[0]:
+                        continue
+                    else :
+                        ref_list.append(ref)
+                ref = '\n'.join(ref_list)
                 #essay_in_file = re.sub(r"CR .*?NR","CR "+ref+"\nNR",essay_in_file ,re.S)
-                sub = re.findall(r"CR .*?NR", essay_in_file, re.S)
-                essay_in_file = essay_in_file.replace(sub[0], "CR "+ref+"\nNR")
+                sub = re.findall(r"CR .*?NR", essay_in_origin, re.S)
+                essay_in_origin = essay_in_origin.replace(sub[0], "CR "+ref+"\nNR")
                 #del essays[t]
-                result = result + '\n' + essay_in_file + '\n'
+                result = result + '\n' + essay_in_origin + '\n'
                 isFound = 1
                 if isFound:
                     break
