@@ -2,6 +2,7 @@ from io import DEFAULT_BUFFER_SIZE
 import re
 DEFAULT = ""
 
+
 def main(file_name):
     es_dict = read_info(file_name)  # 输入文件，解析文件，转换为字典{文章标题：引用文章，引用书籍}
     for key in es_dict:
@@ -34,6 +35,7 @@ def clear_info(essay):
     ref.extend(book)
     return ref
 
+
 '''
 def default_assignment(arr ,index):
     try :
@@ -41,6 +43,7 @@ def default_assignment(arr ,index):
     except : 
         return DEFAULT
 '''
+
 
 def tran_ref(ref_tp):
     # eg: [2]艺术感觉与美育. 滕守尧译,[美]拉尔夫.史密斯著. 四川人民出版社 . 1998
@@ -54,10 +57,10 @@ def tran_ref(ref_tp):
         ref = ref.split('.')
         try:
             ref = [ref[1], ref[-1], ref[-2]]
-        except :
+        except:
             continue
         #ref = [default_assignment(ref ,1),default_assignment(ref ,-1),default_assignment(ref ,-2)]
-        if '' in ref :
+        if '' in ref:
             continue
         # 滕守尧译,1998,四川人民出版社
         result.append(','.join(ref))
@@ -74,13 +77,13 @@ def tran_book(book_tp):
         book = re.sub(r"\[\d+?\]", "", book)
         # 中心的丧失[M]. 译林出版社 . 汉斯·赛德尔迈尔. 2021
         book = book.split('.')
-        try :
+        try:
             book = [book[2], book[-1], book[1]]
-        except : 
+        except:
             continue
         #book = [default_assignment(book ,2),default_assignment(book ,-1), default_assignment(book ,1)]
         # 汉斯·赛德尔迈尔,2021,译林出版社
-        if '' in book : 
+        if '' in book:
             continue
         result.append(','.join(book))
     return result
@@ -96,28 +99,30 @@ def write_file(original_file, essays):
         title = re.findall(r"TI.*?SO", essay_in_origin, re.S)
         title = title[0].replace("TI", "").replace(
             "SO", "").replace(" ", '').replace("\n", '')
-        author = re.findall(r"AU.*?AF",essay_in_origin,re.S)
-        author = author[0].replace(',','').replace('\n','').replace("AU",'').replace("AF","").strip()
+        author = re.findall(r"AU.*?AF", essay_in_origin, re.S)
+        author = author[0].replace(',', '').replace(
+            '\n', '').replace("AU", '').replace("AF", "").strip()
         for t in essays:
             isFound = 0
             if t == title:
                 ref_list = []
                 #ref = '\n'.join(essays[t])
-                for ref in essays[t]: # 比对作者 剔除自引数据
+                for ref in essays[t]:  # 比对作者 剔除自引数据
                     if author in ref[0]:
                         continue
-                    else :
+                    else:
                         ref_list.append(ref)
                 ref = '\n'.join(ref_list)
                 #essay_in_file = re.sub(r"CR .*?NR","CR "+ref+"\nNR",essay_in_file ,re.S)
                 sub = re.findall(r"CR .*?NR", essay_in_origin, re.S)
-                essay_in_origin = essay_in_origin.replace(sub[0], "CR "+ref+"\nNR")
+                essay_in_origin = essay_in_origin.replace(
+                    sub[0], "CR "+ref+"\nNR")
                 #del essays[t]
                 result = result + '\n' + essay_in_origin + '\n'
                 isFound = 1
                 if isFound:
                     break
-        else :
+        else:
             error.add(title)
     file = open("reslt.txt", 'w', encoding="utf-8")
     file.write(result)
@@ -130,4 +135,3 @@ main("./ref_info.html")
 
 # read_info("./ref_info.html")
 #tran_book(("[1]中心的丧失[M]. 译林出版社 , 汉斯·赛德尔迈尔, 2021","[1]中心的丧失[M]. 译林出版社 , 汉斯·赛德尔迈尔, 2021"))
-
