@@ -1,6 +1,7 @@
 import re
 DEFAULT = ""
 tooBig = []
+input_file = "./ref_info.html"
 
 def main(file_name):
     es_dict = read_info(file_name)  # 输入文件，解析文件，转换为字典{文章标题：[引用,...]}
@@ -46,11 +47,19 @@ def clear_info(refs):
     cleaned_refs = []
     for ref in refs :
         if "[M]" in ref :
-            cleaned_refs.append(tran_book(ref))
+            ref = tran_book(ref)
+            if ref == None :
+                continue
+            cleaned_refs.append(','.join(ref))
+        elif ref.count(".") >= 3 :
+            ref = tran_ref(ref)
+            if ref == None :
+                continue
+            cleaned_refs.append(','.join(ref))
         else :
-            cleaned_refs.append(tran_ref(ref))
-    ref.extend(book)
-    return ref
+            continue
+    # ref.extend(cleaned_refs)
+    return cleaned_refs
 
 
 '''
@@ -62,32 +71,28 @@ def default_assignment(arr ,index):
 '''
 
 
-def tran_ref(ref_tp):
+def tran_ref(ref): # 返回调整后的字符串。
     # eg: [2]艺术感觉与美育. 滕守尧译,[美]拉尔夫.史密斯著. 四川人民出版社 . 1998
     '''
     result = []
     for ref in ref_tp:
     '''
     ref = ref.replace(",", '.').strip()
-    if ref == "":
-        continue
     ref = re.sub(r"\[\d+?\]", "", ref)
     # 艺术感觉与美育. 滕守尧译.[美]拉尔夫.史密斯著. 四川人民出版社 . 1998
     ref = ref.split('.')
-    try:
-        ref = [ref[1], ref[-1], ref[-2]]
-    except:
-        continue
+    ref = [ref[1], ref[-1], ref[-2]]
     #ref = [default_assignment(ref ,1),default_assignment(ref ,-1),default_assignment(ref ,-2)]
     if '' in ref:
-        continue
+        ref = None
         # 滕守尧译,1998,四川人民出版社
         # result.append(','.join(ref))
-    return result
+    return ref
 
 
-def tran_book(book_tp):
+def tran_book(book):
     # eg: [1]中心的丧失[M]. 译林出版社 , 汉斯·赛德尔迈尔, 2021
+    '''
     result = []
     for book in book_tp:
         book = book.replace(",", '.').strip()
@@ -105,7 +110,17 @@ def tran_book(book_tp):
         if '' in book:
             continue
         result.append(','.join(book))
-    return result
+    return result 
+    '''
+    book = book.replace(",", '.').strip()
+    book = re.sub(r"\[\d+?\]", "", book)
+    book = book.split('.')
+    book = [book[2], book[-1], book[1]]
+    if '' in book:
+        book = None
+        # 滕守尧译,1998,四川人民出版社
+        # result.append(','.join(ref))
+    return book
 
 
 def write_file(citespace_file, essays_of_cnki):
@@ -149,7 +164,7 @@ def write_file(citespace_file, essays_of_cnki):
     return "添加失败的文章有：" + str(error) + "，一共有" + str(len(error)) + "条。"
 
 
-main("./ref_info.html")
+main(input_file)
 
 
 # read_info("./ref_info.html")
