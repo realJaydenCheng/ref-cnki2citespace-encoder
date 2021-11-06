@@ -113,4 +113,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# self
 Auto_get copy.py
+.vscode
