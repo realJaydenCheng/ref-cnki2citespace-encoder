@@ -7,12 +7,14 @@ import random
 pyautogui.FAILSAFE = True
 # 为所有的PyAutoGUI函数增加延迟。默认延迟时间是0.1秒。
 pyautogui.PAUSE = 0.3
-notex, notey = 465, 1060
+
+notex, notey = 315, 1060
 
 # pyautogui.click(1805,15) # 最小化ide
 time.sleep(0.5)
 while 1:
     try:
+        re_num = 0
         pyautogui.click(100, 25, duration=0.5)
         pyautogui.moveTo(760, 540, duration=0.5)
         bt = pyautogui.locateOnScreen("./img/01sec_bt2.png")
@@ -21,7 +23,8 @@ while 1:
         if bt == None:
             pyautogui.scroll(-random.randint(100, 150))
             a = []
-            print(666)
+            re_num += 1
+            print(f"未检测到可读取的文章，已重试{re_num}次。")
             a[100]
         (x, y) = pyautogui.center(bt)
         pyautogui.moveTo(x, y, duration=0.5)
