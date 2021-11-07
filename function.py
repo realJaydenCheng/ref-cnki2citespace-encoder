@@ -60,6 +60,11 @@ def clear_info(refs):
             if ref == None:
                 continue
             cleaned_refs.append(','.join(ref))
+        elif "[D]" in ref :
+            ref = tran_deg(ref)
+            if ref == None:
+                continue
+            cleaned_refs.append(','.join(ref))
         else:
             continue
     # ref.extend(cleaned_refs)
@@ -85,7 +90,12 @@ def tran_ref(ref):  # 返回调整后的字符串。
     ref = re.sub(r"\[\d+?\]", "", ref)
     # 艺术感觉与美育. 滕守尧译.[美]拉尔夫.史密斯著. 四川人民出版社 . 1998
     ref = ref.split('.')
-    ref = [ref[1], ref[-1], ref[-2]]
+    m =  re.findall(r"\(\d*?\)",ref[-1])#ref[-1]
+    if m:
+        year = ref[-1].replace(m[0],"")
+    else :
+        year = ref[-1]
+    ref = [ref[1], year, ref[-2]]
     #ref = [default_assignment(ref ,1),default_assignment(ref ,-1),default_assignment(ref ,-2)]
     if '' in ref:
         ref = None
@@ -93,7 +103,23 @@ def tran_ref(ref):  # 返回调整后的字符串。
         # result.append(','.join(ref))
     return ref
 
-
+def tran_deg(deg):  # 返回调整后的字符串。
+    # eg: [1]威廉·莫里斯图案设计在室内装饰中的应用研究[D]. 杨倩.湖北工业大学 2020
+    '''
+    result = []
+    for ref in ref_tp:
+    '''
+    deg = deg.replace(",", '.').strip()
+    deg = re.sub(r"\[\d+?\]", "", deg)
+    # 威廉·莫里斯图案设计在室内装饰中的应用研究[D]. 杨倩.湖北工业大学 2020
+    deg = deg.split('.')
+    deg = [deg[1], deg[-1][-4:], deg[-1][:-4].strip()]
+    #ref = [default_assignment(ref ,1),default_assignment(ref ,-1),default_assignment(ref ,-2)]
+    if '' in deg:
+        deg = None
+        # 滕守尧译,1998,四川人民出版社
+        # result.append(','.join(ref))
+    return deg
 
 def tran_book(book):
     # eg: [1]中心的丧失[M]. 译林出版社 , 汉斯·赛德尔迈尔, 2021
