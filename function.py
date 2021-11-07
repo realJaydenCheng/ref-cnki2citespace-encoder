@@ -54,17 +54,20 @@ def clear_info(refs):
             ref = tran_book(ref)
             if ref == None:
                 continue
-            cleaned_refs.append(','.join(ref))
+            ref = list(map(lambda x:x.strip() ,ref))
+            cleaned_refs.append(', '.join(ref))
         elif ref.count(".") >= 3:
             ref = tran_ref(ref)
             if ref == None:
                 continue
-            cleaned_refs.append(','.join(ref))
+            ref = list(map(lambda x:x.strip() ,ref))
+            cleaned_refs.append(', '.join(ref))
         elif "[D]" in ref :
             ref = tran_deg(ref)
             if ref == None:
                 continue
-            cleaned_refs.append(','.join(ref))
+            ref = list(map(lambda x:x.strip() ,ref))
+            cleaned_refs.append(', '.join(ref))
         else:
             continue
     # ref.extend(cleaned_refs)
@@ -90,7 +93,7 @@ def tran_ref(ref):  # 返回调整后的字符串。
     ref = re.sub(r"\[\d+?\]", "", ref)
     # 艺术感觉与美育. 滕守尧译.[美]拉尔夫.史密斯著. 四川人民出版社 . 1998
     ref = ref.split('.')
-    m =  re.findall(r"\(\d*?\)",ref[-1])#ref[-1]
+    m =  re.findall(r"\(.*?\)",ref[-1])#ref[-1]
     if m:
         year = ref[-1].replace(m[0],"")
     else :
@@ -155,7 +158,7 @@ def tran_book(book):
 
 
 def write_file(citespace_file, essays_of_cnki):
-    count = 0
+    count = set()
     file = open(citespace_file, 'r', encoding="utf-8")
     file = file.read()
     file = re.findall(r"PT.*?ER", file, re.S)
@@ -177,8 +180,11 @@ def write_file(citespace_file, essays_of_cnki):
                     if author in ref[0]:
                         continue
                     else:
-                        ref_list.append(ref)
-                count += len(ref_list)
+                        if ref_list :
+                            ref_list.append("   " + ref.strip())
+                        else :
+                            ref_list.append(ref.strip())
+                        count.add(ref)
                 ref = '\n'.join(ref_list)
                 #essay_in_file = re.sub(r"CR .*?NR","CR "+ref+"\nNR",essay_in_file ,re.S)
                 sub = re.findall(r"CR .*?NR", essay_in_origin, re.S)
@@ -193,7 +199,7 @@ def write_file(citespace_file, essays_of_cnki):
     file.write(result)
     file.close()
     error = error - (tooBig | noData)
-    print(f"一共成功写入{count}篇")
+    print(f"一共成功写入{len(count)}篇")
     return "标题有误：\n" + '\n'.join(list(error)) + "\n一共有" + str(len(error)) + "条。\n" 
 
 
